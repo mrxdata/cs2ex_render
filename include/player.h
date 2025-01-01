@@ -45,12 +45,12 @@ public:
     int playerId;
     float yaw;
     float pitch;
-    DirectX::XMFLOAT3 position;
+    XMFLOAT3 position;
     XMMATRIX projectionMatrix;
     XMMATRIX viewMatrix;
 
-    LocalPlayer(int id, float yaw, float pitch, const DirectX::XMFLOAT3& position)
-        : playerId(id), yaw(yaw), pitch(pitch), position(position) {
+    LocalPlayer(int id, float yaw, float pitch, const XMFLOAT3& position)
+        : playerId(id), yaw(yaw), pitch(pitch), position(position), projectionMatrix(XMMatrixIdentity()), viewMatrix(XMMatrixIdentity()) {
     }
 
     LocalPlayer() {

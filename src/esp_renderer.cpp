@@ -52,7 +52,7 @@ bool WorldToScreen(const XMFLOAT3& worldPos, XMFLOAT3& screenPos, const LocalPla
 
 
 void ESPRenderer::RenderESP(void* pvBits) {
-    // if (!Config::espEnabled) return;
+    if (!Config::espEnabled) return;
 
     LocalPlayer& localPlayer = LocalPlayer::getInstance();
 

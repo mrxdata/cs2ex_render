@@ -4,8 +4,8 @@
 
 #include <string>
 #include <fstream>
-#include <sstream>
 #include <json/json.h>
+#include <winuser.rh>
 
 class Config {
 public:
@@ -17,6 +17,8 @@ public:
     static bool showBoundingBoxes;
     static int espColor[3];
     static int viewmodel_fov;
+    static int espKey;
+    static int overlayOpacity;
 
     static void LoadConfig(const std::string& configFile);
     static void SaveConfig(const std::string& configFile);

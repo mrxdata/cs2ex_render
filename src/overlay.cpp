@@ -1,25 +1,29 @@
 #include "../include/render.h"
 #include "../include/overlay.h"
+#include "../include/config.h"
+
+LRESULT HandleWM_PAINT(HWND hwnd);
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
-    case WM_PAINT: {
-        PAINTSTRUCT ps;
-        HDC hdc = BeginPaint(hwnd, &ps);
-        EndPaint(hwnd, &ps);
-        return 0;
-    }
-    case WM_TIMER: {
+    case WM_PAINT:
+        return HandleWM_PAINT(hwnd);
+    case WM_TIMER:
         InvalidateRect(hwnd, NULL, TRUE);
         return 0;
-    }
-    case WM_DESTROY: {
+    case WM_DESTROY:
         PostQuitMessage(0);
         return 0;
-    }
     default:
         return DefWindowProc(hwnd, uMsg, wParam, lParam);
     }
+}
+
+LRESULT HandleWM_PAINT(HWND hwnd) {
+    PAINTSTRUCT ps;
+    HDC hdc = BeginPaint(hwnd, &ps);
+    EndPaint(hwnd, &ps);
+    return 0;
 }
 
 HDCWrapper::HDCWrapper(HDC hdc) : hdc_(hdc) {}
@@ -40,17 +44,7 @@ HBITMAP HBITMAPWrapper::get() const { return hbm_; }
 
 void Overlay::CreateOverlayWindow() {
     const wchar_t CLASS_NAME[] = L"OverlayWindowClass";
-
-    WNDCLASSEX wc = {};
-    wc.cbSize = sizeof(WNDCLASSEX);
-    wc.style = CS_HREDRAW | CS_VREDRAW;
-    wc.lpfnWndProc = WindowProc;
-    wc.hInstance = GetModuleHandle(NULL);
-    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-    wc.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);
-    wc.lpszClassName = CLASS_NAME;
-
-    RegisterClassEx(&wc);
+    RegisterWindowClass(CLASS_NAME);
 
     hwnd_ = CreateWindowEx(
         WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_TRANSPARENT,
@@ -74,8 +68,18 @@ void Overlay::CreateOverlayWindow() {
     ShowWindow(hwnd_, SW_SHOW);
 }
 
-#include <thread>
-#include <chrono>
+void Overlay::RegisterWindowClass(const wchar_t* className) {
+    WNDCLASSEX wc = {};
+    wc.cbSize = sizeof(WNDCLASSEX);
+    wc.style = CS_HREDRAW | CS_VREDRAW;
+    wc.lpfnWndProc = WindowProc;
+    wc.hInstance = GetModuleHandle(NULL);
+    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);
+    wc.lpszClassName = className;
+
+    RegisterClassEx(&wc);
+}
 
 void Overlay::RunMessageLoop() {
     HWND cs2Window = NULL;
@@ -85,28 +89,48 @@ void Overlay::RunMessageLoop() {
 
     MSG msg = {};
     std::cout << "Waiting for CS2 window..." << std::endl;
+
     while (GetMessage(&msg, NULL, 0, 0)) {
         if (msg.message == WM_TIMER) {
-            if (cs2Window == NULL) {
-                cs2Window = FindCS2Window();
-                if (cs2Window != NULL) {
-                    std::cout << "CS2 window found." << std::endl;
-                }
-            }
-            else {
-                bool isActive = IsCS2Active(cs2Window);
-                if (isActive && !cs2Active) {
-                    std::cout << "CS2 window is now active." << std::endl;
-                }
-                else if (!isActive && cs2Active) {
-                    std::cout << "CS2 window is no longer active." << std::endl;
-                }
-                cs2Active = isActive;
-                UpdateOverlay(hwnd_, cs2Window);
-            }
+            ProcessEspKey();
+            HandleCS2Window(cs2Window, cs2Active);
         }
+
         TranslateMessage(&msg);
         DispatchMessage(&msg);
+    }
+}
+
+void Overlay::ProcessEspKey() {
+    static bool prevEspKeyState = false;
+    bool currentEspKeyState = GetAsyncKeyState(Config::espKey) & 0x8000;
+
+    if (currentEspKeyState && !prevEspKeyState) {
+        Config::espEnabled = !Config::espEnabled;
+        std::cout << "ESP toggled: " << (Config::espEnabled ? "Enabled" : "Disabled") << std::endl;
+    }
+    prevEspKeyState = currentEspKeyState;
+}
+
+
+
+void Overlay::HandleCS2Window(HWND& cs2Window, bool& cs2Active) {
+    if (cs2Window == NULL) {
+        cs2Window = FindCS2Window();
+        if (cs2Window != NULL) {
+            std::cout << "CS2 window found." << std::endl;
+        }
+    } else {
+        bool isActive = IsCS2Active(cs2Window);
+        HandleCS2Activity(cs2Active, isActive);
+        cs2Active = isActive;
+        UpdateOverlay(hwnd_, cs2Window);
+    }
+}
+
+void Overlay::HandleCS2Activity(bool& cs2Active, bool isActive) {
+    if (isActive != cs2Active) {
+        std::cout << "CS2 window is " << (isActive ? "now active." : "no longer active.") << std::endl;
     }
 }
 
@@ -120,7 +144,7 @@ HWND Overlay::FindCS2Window() {
             return FALSE;
         }
         return TRUE;
-        }, reinterpret_cast<LPARAM>(&hwnd));
+    }, reinterpret_cast<LPARAM>(&hwnd));
     return hwnd;
 }
 
@@ -130,13 +154,13 @@ bool Overlay::IsCS2Active(HWND cs2Window) {
 
 void Overlay::ClearOverlay(HWND hwnd) {
     HDC hdcScreen = GetDC(NULL);
+
     HDCWrapper hdcMem(CreateCompatibleDC(hdcScreen));
     HBITMAPWrapper hbmMem(CreateCompatibleBitmap(hdcScreen, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN)));
     HBITMAP hbmOld = (HBITMAP)SelectObject(hdcMem.get(), hbmMem.get());
 
     BLENDFUNCTION blend = { 0 };
     blend.BlendOp = AC_SRC_OVER;
-    blend.BlendFlags = 0;
     blend.SourceConstantAlpha = 0;
     blend.AlphaFormat = AC_SRC_ALPHA;
 
@@ -156,10 +180,15 @@ void Overlay::ClearOverlay(HWND hwnd) {
 }
 
 void Overlay::UpdateOverlay(HWND hwnd, HWND cs2Window) {
-    if (!IsCS2Active(cs2Window)) {
-        ClearOverlay(hwnd);
-        return;
+    if (IsCS2Active(cs2Window)) {
+        if (Config::espEnabled) {
+            Render(hwnd);
+        }
+        else {
+            ClearOverlay(hwnd);
+        }
     }
-
-    Render(hwnd);
+    else {
+        ClearOverlay(hwnd);
+    }
 }

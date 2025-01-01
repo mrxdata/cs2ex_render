@@ -8,6 +8,8 @@ bool Config::showPlayerNames = true;
 bool Config::showBoundingBoxes = true;
 int Config::espColor[3] = { 255, 0, 0 };
 int Config::viewmodel_fov = 68;
+int Config::espKey = VK_F1;
+int Config::overlayOpacity = 255;
 
 void Config::LoadConfig(const std::string& configFile) {
     std::ifstream file(configFile);
@@ -25,7 +27,9 @@ void Config::LoadConfig(const std::string& configFile) {
     espColor[0] = config["espColor"]["r"].asInt();
     espColor[1] = config["espColor"]["g"].asInt();
     espColor[2] = config["espColor"]["b"].asInt();
-	viewmodel_fov = config["viewmodel_fov"].asInt();
+    viewmodel_fov = config["viewmodel_fov"].asInt();
+    espKey = config["espKey"].asInt();
+    overlayOpacity = config["overlayOpacity"].asInt();
 }
 
 void Config::SaveConfig(const std::string& configFile) {
@@ -37,12 +41,15 @@ void Config::SaveConfig(const std::string& configFile) {
     config["showPlayerNames"] = showPlayerNames;
     config["showBoundingBoxes"] = showBoundingBoxes;
     config["viewmodel_fov"] = viewmodel_fov;
+    config["espKey"] = espKey;
+    config["overlayOpacity"] = overlayOpacity;
 
     Json::Value espColorConfig;
     espColorConfig["r"] = espColor[0];
     espColorConfig["g"] = espColor[1];
     espColorConfig["b"] = espColor[2];
     config["espColor"] = espColorConfig;
+
     std::ofstream file(configFile);
     file << config;
 }
