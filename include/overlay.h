@@ -25,7 +25,7 @@ private:
 
 class Overlay {
 public:
-    static Overlay& GetInstance() {
+    static Overlay& getInstance() {
         static Overlay instance;
         return instance;
     }
