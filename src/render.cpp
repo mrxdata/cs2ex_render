@@ -1,5 +1,6 @@
 #include "../include/render.h"
 #include "../include/overlay.h"
+#include "../include/esp_renderer.h"
 
 void Render(HWND hwnd) {
     HDC hdcScreen = GetDC(NULL);
@@ -27,7 +28,8 @@ void Render(HWND hwnd) {
 
     memset(pvBits, 0, GetSystemMetrics(SM_CXSCREEN) * GetSystemMetrics(SM_CYSCREEN) * 4);
 
-    DrawRedSquare(pvBits);
+    ESPRenderer::RenderESP();
+    //DrawRedSquare(pvBits);
 
     POINT ptSrc = { 0, 0 };
     SIZE sizeWnd = { GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN) };

@@ -3,6 +3,9 @@
 #define PLAYER_H
 
 #include <string>
+#include <DirectXMath.h>
+
+using namespace DirectX;
 
 struct Vector3 {
     float x, y, z;
@@ -11,33 +14,54 @@ struct Vector3 {
 class Player {
 public:
     int playerId;
-    int team;
     int health;
     int armor;
-    Vector3 origin;
-
-    struct Bones {
-        Vector3 head, spine_1, spine_2, pelvis;
-        Vector3 arm_upper_L, arm_lower_L, hand_L;
-        Vector3 arm_upper_R, arm_lower_R, hand_R;
-        Vector3 leg_upper_L, leg_lower_L, ankle_L;
-        Vector3 leg_upper_R, leg_lower_R, ankle_R;
-    } bones;
-
-    std::string weapon;
+    Vector3 position;
     bool isDefusing;
-    bool isSpotted;
-    int money;
-    float flashAlpha;
 
-    Player(int id, int team, int health, int armor, const std::string& weapon,
-        bool isDefusing, bool isSpotted, int money, float flashAlpha,
-        const Vector3& origin)
-        : playerId(id), team(team), health(health), armor(armor), weapon(weapon),
-        isDefusing(isDefusing), isSpotted(isSpotted), money(money), flashAlpha(flashAlpha), origin(origin) {
+	Player(int id, bool isDefusing,
+           int health, int armor, 
+           float yaw, float pitch, 
+           const Vector3& position)
+     : 
+           playerId(id),  
+           health(health), armor(armor), 
+           isDefusing(isDefusing), 
+           position(position)
+           { }
+
+    static void updatePlayerList();
+};
+
+class LocalPlayer {
+public:
+    static LocalPlayer& getInstance() {
+        static LocalPlayer instance;
+        return instance;
     }
 
+    LocalPlayer(const LocalPlayer&) = delete;
+    LocalPlayer& operator=(const LocalPlayer&) = delete;
+
+    int playerId;
+    float yaw;
+    float pitch;
+    Vector3 position;
+    XMMATRIX projectionMatrix;
+    XMMATRIX viewMatrix;
+
+    LocalPlayer(int id, bool IsLocalPlayer, int health, int armor, float yaw, float pitch, const Vector3& position)
+        : playerId(id), yaw(yaw), pitch(pitch), position(position), projectionMatrix(XMMatrixIdentity()), viewMatrix(XMMatrixIdentity()) {
+    }
+
+    LocalPlayer() {}
+
     void update();
+    struct Vector3 {
+        XMFLOAT3 x, y, z;
+    };
+    void updateMatrices(); // Объявление метода updateMatrices
+
 };
 
 #endif // PLAYER_H

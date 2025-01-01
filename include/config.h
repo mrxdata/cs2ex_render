@@ -16,6 +16,7 @@ public:
     static bool showPlayerNames;
     static bool showBoundingBoxes;
     static int espColor[3];
+    static int viewmodel_fov;
 
     static void LoadConfig(const std::string& configFile);
     static void SaveConfig(const std::string& configFile);
