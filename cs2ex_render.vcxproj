@@ -137,15 +137,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\config.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\overlay.cpp" />
+    <ClCompile Include="src\player.cpp" />
     <ClCompile Include="src\render.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\config.h" />
     <ClInclude Include="include\overlay.h" />
+    <ClInclude Include="include\player.h" />
     <ClInclude Include="include\render.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

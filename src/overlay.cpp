@@ -1,6 +1,5 @@
 #include "../include/render.h"
 #include "../include/overlay.h"
-#include <iostream>
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
@@ -75,6 +74,9 @@ void Overlay::CreateOverlayWindow() {
     ShowWindow(hwnd_, SW_SHOW);
 }
 
+#include <thread>
+#include <chrono>
+
 void Overlay::RunMessageLoop() {
     HWND cs2Window = NULL;
     bool cs2Active = false;
@@ -82,15 +84,13 @@ void Overlay::RunMessageLoop() {
     SetTimer(hwnd_, 1, 1000 / 60, NULL);
 
     MSG msg = {};
+    std::cout << "Waiting for CS2 window..." << std::endl;
     while (GetMessage(&msg, NULL, 0, 0)) {
         if (msg.message == WM_TIMER) {
             if (cs2Window == NULL) {
                 cs2Window = FindCS2Window();
                 if (cs2Window != NULL) {
                     std::cout << "CS2 window found." << std::endl;
-                }
-                else {
-                    std::cout << "Waiting for CS2 window..." << std::endl;
                 }
             }
             else {

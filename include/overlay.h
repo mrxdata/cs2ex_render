@@ -2,6 +2,8 @@
 #define OVERLAY_H
 
 #include <windows.h>
+#include <iostream>
+
 
 class HDCWrapper {
 public:

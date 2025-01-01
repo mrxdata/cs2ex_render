@@ -1,6 +1,3 @@
-#include <windows.h>
-#include <iostream>
-#include <thread>
 #include "../include/overlay.h"
 #include "../include/render.h"
 
