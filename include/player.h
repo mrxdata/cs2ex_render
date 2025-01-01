@@ -6,37 +6,36 @@
 #include <DirectXMath.h>
 
 using namespace DirectX;
-
-struct Vector3 {
-    float x, y, z;
-};
+using DirectX::XMFLOAT3;
 
 class Player {
 public:
     int playerId;
     int health;
     int armor;
-    Vector3 position;
+    XMFLOAT3 position;
     bool isDefusing;
 
 	Player(int id, bool isDefusing,
            int health, int armor, 
-           float yaw, float pitch, 
-           const Vector3& position)
+           const XMFLOAT3& position)
      : 
            playerId(id),  
            health(health), armor(armor), 
            isDefusing(isDefusing), 
            position(position)
            { }
-
+    Player() {
+        update();
+    }
+    void update();
     static void updatePlayerList();
 };
 
 class LocalPlayer {
 public:
     static LocalPlayer& getInstance() {
-        static LocalPlayer instance;
+		static LocalPlayer instance;
         return instance;
     }
 
@@ -46,20 +45,19 @@ public:
     int playerId;
     float yaw;
     float pitch;
-    Vector3 position;
+    DirectX::XMFLOAT3 position;
     XMMATRIX projectionMatrix;
     XMMATRIX viewMatrix;
 
-    LocalPlayer(int id, bool IsLocalPlayer, int health, int armor, float yaw, float pitch, const Vector3& position)
-        : playerId(id), yaw(yaw), pitch(pitch), position(position), projectionMatrix(XMMatrixIdentity()), viewMatrix(XMMatrixIdentity()) {
+    LocalPlayer(int id, float yaw, float pitch, const DirectX::XMFLOAT3& position)
+        : playerId(id), yaw(yaw), pitch(pitch), position(position) {
     }
 
-    LocalPlayer() {}
+    LocalPlayer() {
+        update();
+    }
 
     void update();
-    struct Vector3 {
-        XMFLOAT3 x, y, z;
-    };
     void updateMatrices(); // Объявление метода updateMatrices
 
 };

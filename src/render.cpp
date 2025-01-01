@@ -28,8 +28,8 @@ void Render(HWND hwnd) {
 
     memset(pvBits, 0, GetSystemMetrics(SM_CXSCREEN) * GetSystemMetrics(SM_CYSCREEN) * 4);
 
-    ESPRenderer::RenderESP();
-    //DrawRedSquare(pvBits);
+    ESPRenderer::RenderESP(pvBits);
+    //DrawRedSquare(pvBits); 
 
     POINT ptSrc = { 0, 0 };
     SIZE sizeWnd = { GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN) };
@@ -40,6 +40,7 @@ void Render(HWND hwnd) {
     SelectObject(hdcMem.get(), hbmOldAlpha);
     ReleaseDC(NULL, hdcScreen);
 }
+
 
 void DrawRedSquare(void* pvBits)
 {
