@@ -4,6 +4,8 @@
 
 #include <string>
 #include <DirectXMath.h>
+#include <nlohmann/json.hpp>
+#include <iostream>
 
 using namespace DirectX;
 using DirectX::XMFLOAT3;
@@ -26,10 +28,12 @@ public:
            position(position)
            { }
     Player() {
-        update();
+        //update();
     }
-    void update();
-    static void updatePlayerList();
+    //static void update();
+    //void updatePlayer(XMFLOAT3 position);
+    static void updatePlayerPositions(const std::string& jsonData);
+    static void updatePlayerList(const std::string& jsonData);
 };
 
 class LocalPlayer {
@@ -43,6 +47,7 @@ public:
     LocalPlayer& operator=(const LocalPlayer&) = delete;
 
     int playerId;
+	static constexpr std::string playerName = "наст";
     float yaw;
     float pitch;
     XMFLOAT3 position;
@@ -54,10 +59,10 @@ public:
     }
 
     LocalPlayer() {
-        update();
+        //update();
     }
 
-    void update();
+    //void update();
     void updateMatrices(); // Объявление метода updateMatrices
 
 };

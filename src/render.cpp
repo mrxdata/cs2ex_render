@@ -40,8 +40,10 @@ namespace RenderResources {
             blend.SourceConstantAlpha = 255;
             blend.AlphaFormat = AC_SRC_ALPHA;
 
+            if (hbmAlpha == NULL) {
+                return;
+            }
             hbmOld = (HBITMAP)SelectObject(hdcMem, hbmAlpha);
-
             initialized = true;
 
         }
