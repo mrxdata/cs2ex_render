@@ -34,7 +34,6 @@ public:
     bool IsCS2Active(HWND cs2Window);
     void ClearOverlay(HWND hwnd);
     void UpdateOverlay(HWND hwnd, HWND cs2Window);
-    void DrawRedSquare(HDC hdc);
 
 private:
     Overlay() : hwnd_(NULL) {}

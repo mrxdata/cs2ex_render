@@ -7,7 +7,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     case WM_PAINT: {
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hwnd, &ps);
-        Overlay::GetInstance().DrawRedSquare(hdc);
         EndPaint(hwnd, &ps);
         return 0;
     }
@@ -163,19 +162,4 @@ void Overlay::UpdateOverlay(HWND hwnd, HWND cs2Window) {
     }
 
     Render(hwnd);
-}
-
-void Overlay::DrawRedSquare(HDC hdc) {
-    RECT rect;
-    GetClientRect(WindowFromDC(hdc), &rect);
-
-    int width = 100;
-    int height = 100;
-    int x = (rect.right - rect.left) / 2 - width / 2;
-    int y = (rect.bottom - rect.top) / 2 - height / 2;
-
-    HBRUSH redBrush = CreateSolidBrush(RGB(255, 0, 0));
-    RECT square = { x, y, x + width, y + height };
-    FillRect(hdc, &square, redBrush);
-    DeleteObject(redBrush);
 }

@@ -27,15 +27,7 @@ void Render(HWND hwnd) {
 
     memset(pvBits, 0, GetSystemMetrics(SM_CXSCREEN) * GetSystemMetrics(SM_CYSCREEN) * 4);
 
-    int width = 100;
-    int height = 100;
-    int x = (GetSystemMetrics(SM_CXSCREEN) / 2) - (width / 2);
-    int y = (GetSystemMetrics(SM_CYSCREEN) / 2) - (height / 2);
-    for (int i = 0; i < height; ++i) {
-        for (int j = 0; j < width; ++j) {
-            ((DWORD*)pvBits)[(y + i) * GetSystemMetrics(SM_CXSCREEN) + (x + j)] = 0xFFFF0000;
-        }
-    }
+    DrawRedSquare(pvBits);
 
     POINT ptSrc = { 0, 0 };
     SIZE sizeWnd = { GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN) };
@@ -45,5 +37,18 @@ void Render(HWND hwnd) {
 
     SelectObject(hdcMem.get(), hbmOldAlpha);
     ReleaseDC(NULL, hdcScreen);
+}
+
+void DrawRedSquare(void* pvBits)
+{
+    int width = 100;
+    int height = 100;
+    int x = (GetSystemMetrics(SM_CXSCREEN) / 2) - (width / 2);
+    int y = (GetSystemMetrics(SM_CYSCREEN) / 2) - (height / 2);
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            ((DWORD*)pvBits)[(y + i) * GetSystemMetrics(SM_CXSCREEN) + (x + j)] = 0xFFFF0000;
+        }
+    }
 }
 

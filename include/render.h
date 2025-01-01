@@ -5,4 +5,6 @@
 
 void Render(HWND hwnd);
 
+void DrawRedSquare(void* pvBits);
+
 #endif // RENDER_H
