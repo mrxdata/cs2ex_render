@@ -6,6 +6,7 @@
 #include <DirectXMath.h>
 #include <nlohmann/json.hpp>
 #include <iostream>
+#include "../generated/enemies.pb.h"
 
 using namespace DirectX;
 using DirectX::XMFLOAT3;
@@ -27,13 +28,16 @@ public:
            isDefusing(isDefusing), 
            position(position)
            { }
-    Player() {
-        //update();
-    }
-    //static void update();
-    //void updatePlayer(XMFLOAT3 position);
-    static void updatePlayerPositions(const std::string& jsonData);
-    static void updatePlayerList(const std::string& jsonData);
+    Player() :
+        playerId(0),
+        health(0),
+        armor(0),
+        isDefusing(false),
+        position({0, 0, 0})
+    { }
+
+    static void updatePlayerPositions(const Enemies& enemies);
+    static void updatePlayerList(const Enemies& enemies);
 };
 
 class LocalPlayer {
@@ -58,12 +62,12 @@ public:
         : playerId(id), yaw(yaw), pitch(pitch), position(position), projectionMatrix(XMMatrixIdentity()), viewMatrix(XMMatrixIdentity()) {
     }
 
-    LocalPlayer() {
+    LocalPlayer() : playerId(0), yaw(0), pitch(0), position({0, 0, 0}), projectionMatrix(XMMatrixIdentity()), viewMatrix(XMMatrixIdentity()) {
         //update();
     }
 
     //void update();
-    void updateMatrices(); // Объявление метода updateMatrices
+    void updateMatrices();
 
 };
 

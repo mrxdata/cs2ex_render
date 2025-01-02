@@ -1,6 +1,8 @@
+#include "../include/network_manager.h"
 #include "../include/overlay.h"
 #include "../include/render.h"
-#include "../include/network_manager.h"
+#include <windows.h>
+#define BOOST_ASIO_NO_WIN32_LEAN_AND_MEAN
 
 int main() {
     try {
@@ -10,6 +12,7 @@ int main() {
         unsigned short server_port = 7000;
 
         NetworkManager network_manager(io_context, server_ip, server_port);
+        std::cout << "Waiting for packets\n";
         network_manager.startReceiving();
 
         io_context.run();
@@ -20,5 +23,7 @@ int main() {
     Overlay& overlay = Overlay::getInstance();
     overlay.CreateOverlayWindow();
     overlay.RunMessageLoop();
+
+    WSACleanup();
     return 0;
 }

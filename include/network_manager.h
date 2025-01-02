@@ -1,11 +1,13 @@
 #pragma once
-#ifndef NETWORK_MANAGER_HPP
-#define NETWORK_MANAGER_HPP
+#ifndef NETWORK_MANAGER_H
+#define NETWORK_MANAGER_H
 
 #include <boost/asio.hpp>
+
 #include <array>
 #include <string>
 #include <iostream>
+#include "../generated/enemies.pb.h"
 
 using boost::asio::ip::udp;
 
@@ -18,10 +20,11 @@ public:
 private:
     void receiveData();
     void processData(std::size_t bytes_received);
+    bool hasPlayersListChanged(const Enemies& newEnemies);
 
     udp::socket socket_;
     udp::endpoint server_endpoint_;
     std::array<char, 1024> receive_buffer_;
 };
 
-#endif // NETWORK_MANAGER_HPP
+#endif // NETWORK_MANAGER_H
