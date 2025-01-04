@@ -26,7 +26,7 @@ void Render::DrawBorderedBox(HDC hdc, int x, int y, int w, int h, COLORREF borde
 	DeleteObject(hBorderBrush);
 }
 
-void Render::RenderESP(LocalPlayer local_player, Enemies entity_list)
+void Render::RenderESP(LocalPlayer& local_player, const Enemies& entity_list)
 {
     for (int i = 0; i < entity_list.entries_size(); i++)
     {

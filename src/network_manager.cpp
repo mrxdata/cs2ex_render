@@ -8,14 +8,14 @@
 
 NetworkManager::NetworkManager(const std::string& host, const std::string& port)
 	: socket(io_context, boost::asio::ip::udp::v4()), host(host), port(port) {
-	start();
+	_start();
 }
 
 NetworkManager::~NetworkManager() {
 	stop();
 }
 
-void NetworkManager::start() {
+void NetworkManager::_start() {
 	if (is_running == true)
 	{
 		std::cerr << "Network manager is already running!\n";

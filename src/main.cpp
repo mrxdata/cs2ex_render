@@ -6,6 +6,8 @@
 #include <thread>
 #include <chrono>
 
+LocalPlayer local_player = LocalPlayer();
+
 LRESULT __stdcall WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message)
     {
@@ -30,11 +32,9 @@ LRESULT __stdcall WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         FillRect(g::hdcBuffer, &ps.rcPaint, (HBRUSH)GetStockObject(WHITE_BRUSH));
 
-        //if (GetForegroundWindow() == g_game.process->hwnd_) {
-        //    //render::RenderText(g::hdcBuffer, 10, 10, "cs2 | ESP", RGB(75, 175, 175), 15);
-        //    hack::loop();
-        //}
-		Render::DrawBorderedBox(g::hdcBuffer, g::SCREEN_WIDTH / 2, g::SCREEN_HEIGHT / 2, 90, 160, RGB(255, 0, 0));
+		//Render::DrawBorderedBox(g::hdcBuffer, g::SCREEN_WIDTH / 2, g::SCREEN_HEIGHT / 2, 90, 160, RGB(255, 0, 0));
+
+        Render::RenderESP(local_player, g::entity_list);
 
         BitBlt(hdc, 0, 0, g::SCREEN_WIDTH, g::SCREEN_HEIGHT, g::hdcBuffer, 0, 0, SRCCOPY);
 
@@ -103,7 +103,6 @@ int main() {
 
     SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
     ShowWindow(hWnd, SW_SHOW);
-    UpdateWindow(hWnd);
     
     std::string server_ip = "46.191.235.182";
 	std::string server_port = "7000";
@@ -113,10 +112,10 @@ int main() {
 
 	std::jthread render_thread([&]() {
 		while (network_manager.is_running == true) {
-            Enemies entity_list = network_manager.receive_data();
-            if (entity_list.entries_size() != 0)
+            g::entity_list = network_manager.receive_data();
+            if (g::entity_list.entries_size() != 0)
             {
-                Render::RenderESP(LocalPlayer(), entity_list);
+                UpdateWindow(hWnd);
             }
             else
             {
