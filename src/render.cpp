@@ -28,20 +28,30 @@ void Render::DrawBorderedBox(HDC hdc, int x, int y, int w, int h, COLORREF borde
 
 void Render::RenderESP(LocalPlayer local_player, Enemies enemies)
 {
-	for (int i = 0; i < enemies.entries_size(); i++)
-	{
-		const auto& player = enemies.entries(i);
+    for (int i = 0; i < enemies.entries_size(); i++)
+    {
+        const auto& player = enemies.entries(i);
 
-		if (player.name() == local_player.name)
-		{
-			local_player.playerId = i;
-			continue;
-		}
+        Vector3 player_pos = Vector3(player.x(), player.y(), player.z());
 
-		Vector3 player_pos = Vector3(player.x(), player.y(), player.z());
-		Vector3 screen_pos = graphics::world_to_screen(&player_pos, local_player.view_matrix);
-		//if (screen_pos.z < 0.01f) continue;
-		DrawBorderedBox(g::hdcBuffer, screen_pos.x, screen_pos.y, 90, 160, RGB(255, 0, 0));
-	}
+        if (player.name() == local_player.name) 
+        {
+            local_player.id = i; 
+            continue;
+        }
+
+        local_player.view_matrix = graphics::create_view_matrix(local_player.position, player.yaw(), player.pitch(), player_pos);
+
+        float distance = local_player.position.calculate_distance(player_pos);
+
+        float box_size = 160.0f / (1.0f + distance * 0.1f);
+
+        Vector3 screen_pos = graphics::world_to_screen(&player_pos, local_player.view_matrix);
+
+        //if (screen_pos.z < 0.01f) continue;
+
+        DrawBorderedBox(g::hdcBuffer, screen_pos.x, screen_pos.y, box_size, box_size * 1.8f, RGB(255, 0, 0));
+    }
 }
+
 

@@ -1,7 +1,8 @@
-#include <Windows.h>
-#include <iostream>
 #include "../include/globals.h"
 #include "../include/render.h"
+#include <Windows.h>
+#include <iostream>
+#include <thread>
 
 LRESULT __stdcall WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message)
@@ -98,13 +99,22 @@ int main() {
         return 1;
     }
 
+    SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
     ShowWindow(hWnd, SW_SHOW);
     UpdateWindow(hWnd);
+
+	std::jthread render_thread([&]() {
+		while (true) {
+			Render::RenderESP(LocalPlayer(), Enemies());
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		}
+		});
 
     MSG msg = {};
     while (GetMessage(&msg, NULL, 0, 0)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 
     return 0;
