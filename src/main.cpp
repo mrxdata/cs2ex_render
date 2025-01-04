@@ -31,7 +31,7 @@ LRESULT __stdcall WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         //    //render::RenderText(g::hdcBuffer, 10, 10, "cs2 | ESP", RGB(75, 175, 175), 15);
         //    hack::loop();
         //}
-		render::DrawBorderedBox(g::hdcBuffer, g::SCREEN_WIDTH / 2, g::SCREEN_HEIGHT / 2, 90, 160, 1, RGB(255, 0, 0));
+		Render::DrawBorderedBox(g::hdcBuffer, g::SCREEN_WIDTH / 2, g::SCREEN_HEIGHT / 2, 90, 160, RGB(255, 0, 0));
 
         BitBlt(hdc, 0, 0, g::SCREEN_WIDTH, g::SCREEN_HEIGHT, g::hdcBuffer, 0, 0, SRCCOPY);
 

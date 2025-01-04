@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+message EnemyValue {
+    string team = 1;
+    string name = 2;
+    float x = 3;
+    float y = 4;
+    float z = 5;
+    int32 hp = 6;
+    float yaw = 8;
+    float pitch = 9;
+    bool has_defuse = 7;
+    bool is_defusing = 10;
+    float time_left_defuse = 11;
+    float time_left_explosion = 12;
+}
+
+message Enemies {
+    repeated EnemyValue entries = 1;
+}
