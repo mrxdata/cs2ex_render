@@ -1,5 +1,7 @@
 #pragma once
 #include "vector.h"
+#include <array>
+
 typedef std::array<std::array<float, 4>, 4> ViewMatrix;
 
 namespace graphics {

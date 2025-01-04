@@ -1,9 +1,10 @@
+#include "../include/network_manager.h"
 #include "../include/globals.h"
 #include "../include/render.h"
-#include "../include/network_manager.h"
 #include <Windows.h>
 #include <iostream>
 #include <thread>
+#include <chrono>
 
 LRESULT __stdcall WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message)
@@ -108,7 +109,7 @@ int main() {
 	std::string server_port = "7000";
 
     NetworkManager network_manager(server_ip, server_port);
-	network_manager.start();
+	network_manager.send_udp_hello();
 
 	std::jthread render_thread([&]() {
 		while (network_manager.is_running == true) {

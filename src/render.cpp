@@ -26,11 +26,11 @@ void Render::DrawBorderedBox(HDC hdc, int x, int y, int w, int h, COLORREF borde
 	DeleteObject(hBorderBrush);
 }
 
-void Render::RenderESP(LocalPlayer local_player, Enemies enemies)
+void Render::RenderESP(LocalPlayer local_player, Enemies entity_list)
 {
-    for (int i = 0; i < enemies.entries_size(); i++)
+    for (int i = 0; i < entity_list.entries_size(); i++)
     {
-        const auto& player = enemies.entries(i);
+        const auto& player = entity_list.entries(i);
 
         Vector3 player_pos = Vector3(player.x(), player.y(), player.z());
 
