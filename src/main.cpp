@@ -1,5 +1,6 @@
 #include "../include/globals.h"
 #include "../include/render.h"
+#include "../include/network_manager.h"
 #include <Windows.h>
 #include <iostream>
 #include <thread>
@@ -102,11 +103,25 @@ int main() {
     SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
     ShowWindow(hWnd, SW_SHOW);
     UpdateWindow(hWnd);
+    
+    std::string server_ip = "46.191.235.182";
+	std::string server_port = "7000";
+
+    NetworkManager network_manager(server_ip, server_port);
+	network_manager.start();
 
 	std::jthread render_thread([&]() {
-		while (true) {
-			Render::RenderESP(LocalPlayer(), Enemies());
-			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		while (network_manager.is_running == true) {
+            Enemies entity_list = network_manager.receive_data();
+            if (entity_list.entries_size() != 0)
+            {
+                Render::RenderESP(LocalPlayer(), entity_list);
+            }
+            else
+            {
+                continue;
+            }
+			std::this_thread::sleep_for(std::chrono::milliseconds(16));
 		}
 		});
 
