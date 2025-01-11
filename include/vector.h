@@ -22,45 +22,59 @@ struct Vector3
 		};
 	}
 
-	float length() const {
-		return std::sqrt(x * x + y * y + z * z);
-	}
-
-	float dot(const Vector3& other) const {
+	float dot(const Vector3& other) const noexcept {
 		return x * other.x + y * other.y + z * other.z;
 	}
 
-	Vector3 normalize() const {
+	float length() const noexcept {
+		return std::sqrt(x * x + y * y + z * z);
+	}
+
+	Vector3 normalize() const noexcept {
 		float len = length();
-		return Vector3(x / len, y / len, z / len);
+		if (len == 0) {
+			return { 0, 0, 0 };
+		}
+		return { x / len, y / len, z / len };
 	}
 
-	float calculate_distance(const Vector3& point) const {
-		float dx = point.x - x;
-		float dy = point.y - y;
-		float dz = point.z - z;
-
-		return std::sqrt(dx * dx + dy * dy + dz * dz);
+	Vector3 cross(const Vector3& other) const noexcept {
+		return {
+			y * other.z - z * other.y,
+			z * other.x - x * other.z,
+			x * other.y - y * other.x
+		};
 	}
 
-	constexpr const Vector3& operator-(const Vector3& other) const noexcept
-	{
-		return Vector3{ x - other.x, y - other.y, z - other.z };
+	float distance_to(const Vector3& other) const noexcept {
+		return std::sqrt((x - other.x) * (x - other.x) +
+						 (y - other.y) * (y - other.y) +
+						 (z - other.z) * (z - other.z));
 	}
 
-	constexpr const Vector3& operator+(const Vector3& other) const noexcept
-	{
-		return Vector3{ x + other.x, y + other.y, z + other.z };
+	static Vector3 direction_vector(const float yaw_rad, const float pitch_rad) {
+		float vx = cos(yaw_rad) * cos(pitch_rad);  
+		float vy = sin(pitch_rad);                
+		float vz = -sin(yaw_rad) * cos(pitch_rad); 
+
+		return { vx, vy, vz };
 	}
 
-	constexpr const Vector3& operator/(const float factor) const noexcept
-	{
-		return Vector3{ x / factor, y / factor, z / factor };
+
+	constexpr const Vector3& operator-(const Vector3& other) const noexcept {
+		return { x - other.x, y - other.y, z - other.z };
 	}
 
-	constexpr const Vector3& operator*(const float factor) const noexcept
-	{
-		return Vector3{ x * factor, y * factor, z * factor };
+	constexpr const Vector3& operator+(const Vector3& other) const noexcept {
+		return { x + other.x, y + other.y, z + other.z };
+	}
+
+	constexpr const Vector3& operator/(const float scalar) const noexcept {
+		return { x / scalar, y / scalar, z / scalar };
+	}
+
+	constexpr const Vector3& operator*(const float scalar) const noexcept {
+		return { x * scalar, y * scalar, z * scalar };
 	}
 
 	constexpr const bool operator>(const Vector3& other) const noexcept {
@@ -78,4 +92,23 @@ struct Vector3
 	constexpr const bool operator<=(const Vector3& other) const noexcept {
 		return x <= other.x && y <= other.y && z <= other.z;
 	}
+	constexpr const bool operator==(const Vector3& other) const noexcept {
+		return x == other.x && y == other.y && z == other.z;
+	}
+};
+
+struct Vector4 {
+	float x, y, z, w;
+	Vector4(const Vector3& vec, float w) : x(vec.x), y(vec.y), z(vec.z), w(w) {}
+
+	Vector3 xyz() const noexcept {
+		return { x, y, z };
+	}
+
+};
+
+struct Vector2 {
+	float x, y;
+
+	Vector2(float x, float y) : x(x), y(y) {}
 };

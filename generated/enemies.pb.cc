@@ -3,6 +3,8 @@
 // source: enemies.proto
 // Protobuf C++ Version: 5.29.2
 
+#pragma warning(push)
+#pragma warning(disable : 0)
 #include "enemies.pb.h"
 
 #include <algorithm>
@@ -903,3 +905,4 @@ PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 static ::std::false_type
         (::_pbi::AddDescriptors(&descriptor_table_enemies_2eproto),
          ::std::false_type{});
 #include "google/protobuf/port_undef.inc"
+#pragma warning(pop)

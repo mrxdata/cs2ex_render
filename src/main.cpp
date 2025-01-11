@@ -5,8 +5,12 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include "../include/time_counter.h"
 
-LocalPlayer local_player = LocalPlayer();
+std::string server_ip = "46.191.235.182"; 
+std::string server_port = "7000"; 
+
+NetworkManager network_manager(server_ip, server_port); 
 
 LRESULT __stdcall WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message)
@@ -32,10 +36,9 @@ LRESULT __stdcall WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         FillRect(g::hdcBuffer, &ps.rcPaint, (HBRUSH)GetStockObject(WHITE_BRUSH));
 
-		//Render::DrawBorderedBox(g::hdcBuffer, g::SCREEN_WIDTH / 2, g::SCREEN_HEIGHT / 2, 90, 160, RGB(255, 0, 0));
-
-        Render::RenderESP(local_player, g::entity_list);
-
+        g::timer.start();
+        g::entity_list = network_manager.receive_data();
+        Render::RenderESP(g::local_player, g::entity_list);
         BitBlt(hdc, 0, 0, g::SCREEN_WIDTH, g::SCREEN_HEIGHT, g::hdcBuffer, 0, 0, SRCCOPY);
 
         EndPaint(hWnd, &ps);
@@ -50,7 +53,6 @@ LRESULT __stdcall WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     }
     default:
-        //std::cout << "Default\n";
         return DefWindowProc(hWnd, message, wParam, lParam);
         break;
     }
@@ -63,15 +65,6 @@ int main() {
     WNDCLASSEX wc = {};
     wc.cbSize = sizeof(WNDCLASSEX);    
     wc.lpfnWndProc = WndProc;
-
-	//wc.style = CS_HREDRAW 
- //            | CS_VREDRAW 
- //            | WS_EX_TRANSPARENT 
- //            | WS_EX_TOPMOST 
- //            | WS_EX_LAYERED 
- //            | WS_EX_TOOLWINDOW 
- //            | WS_EX_NOACTIVATE 
- //            | WS_EX_COMPOSITED;
 
     wc.style = CS_HREDRAW | CS_VREDRAW;
 
@@ -101,29 +94,25 @@ int main() {
         return 1;
     }
 
-    SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
     ShowWindow(hWnd, SW_SHOW);
     
-    std::string server_ip = "46.191.235.182";
-	std::string server_port = "7000";
-
-    NetworkManager network_manager(server_ip, server_port);
+   
 	network_manager.send_udp_hello();
 
-	std::jthread render_thread([&]() {
-		while (network_manager.is_running == true) {
-            g::entity_list = network_manager.receive_data();
-            if (g::entity_list.entries_size() != 0)
-            {
-                UpdateWindow(hWnd);
-            }
-            else
-            {
-                continue;
-            }
-			std::this_thread::sleep_for(std::chrono::milliseconds(16));
-		}
-		});
+	//std::jthread data_thread([&]() {
+	//	while (network_manager.is_running == true) {
+ //           if (g::entity_list.entries_size() != 0)
+ //           {
+ //               //g::timer.start();
+ //               //UpdateWindow(hWnd);
+ //           }
+ //           else
+ //           {
+ //               continue;
+ //           }
+	//		std::this_thread::sleep_for(std::chrono::milliseconds(16));
+	//	}
+	//	});
 
     MSG msg = {};
     while (GetMessage(&msg, NULL, 0, 0)) {

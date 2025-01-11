@@ -3,6 +3,8 @@
 // source: enemies.proto
 // Protobuf C++ Version: 5.29.2
 
+#pragma warning(push)
+#pragma warning(disable : 0)
 #ifndef enemies_2eproto_2epb_2eh
 #define enemies_2eproto_2epb_2eh
 
@@ -995,3 +997,4 @@ Enemies::_internal_mutable_entries() {
 #include "google/protobuf/port_undef.inc"
 
 #endif  // enemies_2eproto_2epb_2eh
+#pragma warning(pop)
