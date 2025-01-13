@@ -7,13 +7,15 @@ public:
 	NetworkManager(const std::string& host, const std::string& port);
 	~NetworkManager();
 
+	void start();
+	void run_io_service();
 	void stop();
 	void send_udp_hello();
-	Enemies receive_data();
+	void receive_data_async();
+	void update_data(Enemies& enemies);
 	std::atomic<bool> is_running{ false };
 
 private:
-	void _start();
 	std::unique_ptr<std::thread> io_thread;
 	boost::asio::io_context io_context;
 	boost::asio::ip::udp::socket socket;

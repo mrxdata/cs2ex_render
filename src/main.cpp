@@ -7,11 +7,6 @@
 #include <chrono>
 #include "../include/time_counter.h"
 
-std::string server_ip = "46.191.235.182"; 
-std::string server_port = "7000"; 
-
-NetworkManager network_manager(server_ip, server_port); 
-
 LRESULT __stdcall WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message)
     {
@@ -36,9 +31,8 @@ LRESULT __stdcall WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         FillRect(g::hdcBuffer, &ps.rcPaint, (HBRUSH)GetStockObject(WHITE_BRUSH));
 
-        g::timer.start();
-        g::entity_list = network_manager.receive_data();
-        Render::RenderESP(g::local_player, g::entity_list);
+        Render::RenderESP();
+
         BitBlt(hdc, 0, 0, g::SCREEN_WIDTH, g::SCREEN_HEIGHT, g::hdcBuffer, 0, 0, SRCCOPY);
 
         EndPaint(hWnd, &ps);
@@ -96,24 +90,16 @@ int main() {
 
     ShowWindow(hWnd, SW_SHOW);
     
+    std::string server_ip = "46.191.235.182"; 
+    std::string server_port = "7000"; 
+
+    NetworkManager network_manager(server_ip, server_port); 
    
-	network_manager.send_udp_hello();
-
-	//std::jthread data_thread([&]() {
-	//	while (network_manager.is_running == true) {
- //           if (g::entity_list.entries_size() != 0)
- //           {
- //               //g::timer.start();
- //               //UpdateWindow(hWnd);
- //           }
- //           else
- //           {
- //               continue;
- //           }
-	//		std::this_thread::sleep_for(std::chrono::milliseconds(16));
-	//	}
-	//	});
-
+    network_manager.start(); 
+	network_manager.send_udp_hello();  
+    network_manager.receive_data_async();  
+    network_manager.run_io_service();
+    
     MSG msg = {};
     while (GetMessage(&msg, NULL, 0, 0)) {
         TranslateMessage(&msg);
