@@ -1,12 +1,11 @@
 #include "../include/network_manager.h"
 #include "../include/globals.h"
 #include "../include/render.h"
+#include "../include/time_counter.h"
 #include <Windows.h>
 #include <iostream>
 #include <thread>
 #include <chrono>
-#include "../include/time_counter.h"
-
 
 LRESULT __stdcall WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message)
@@ -20,7 +19,7 @@ LRESULT __stdcall WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         SetWindowLong(hWnd, GWL_EXSTYLE, GetWindowLong(hWnd, GWL_EXSTYLE) | WS_EX_LAYERED);
 
         SetLayeredWindowAttributes(hWnd, RGB(255, 255, 255), 0, LWA_COLORKEY);
-        std::cout << "[+] Overlay created successfully" << std::endl;
+        std::cout << "[+] Overlay created successfully\n";
         break;
     }
     case WM_ERASEBKGND:
@@ -110,10 +109,12 @@ int main() {
             {
                 printf("MSG: %d | PACKET: %d | RENDER: %d | TIME: %s\n", g::msg_counter.load(), g::packet_counter.load(), g::render_counter.load(), g::timer.return_duration("ms"));
             }
+            std::this_thread::sleep_for(std::chrono_milliseconds(1000));
         }
         });
     counter_thread.detach();
 #endif
+
     MSG msg = {};
     while (GetMessage(&msg, NULL, 0, 0)) {
         TranslateMessage(&msg);
@@ -123,6 +124,8 @@ int main() {
 #endif
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
+
+
 #ifdef DEBUG
     counter_thread.join();
 #endif

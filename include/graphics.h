@@ -1,11 +1,11 @@
 #pragma once
 #include "vector.h"
-#include <array>
 #include "local_player.h"
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/trigonometric.hpp>
+#include <array>
 
 struct Matrix4 {
     float data[4][4] = { 0 };
