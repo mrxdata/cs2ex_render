@@ -13,4 +13,7 @@ namespace g {
 	inline Enemies entity_list;
 	inline LocalPlayer local_player = LocalPlayer();
 	inline Timer timer;
+	inline std::atomic<int> msg_counter = 0;
+	inline std::atomic<int> packet_counter = 0;
+	inline std::atomic<int> render_counter = 0;
 }

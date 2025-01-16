@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include <numbers>
+#include <glm/vec3.hpp>
 
 struct Vector3
 {
@@ -93,6 +94,9 @@ struct Vector3
 		return x <= other.x && y <= other.y && z <= other.z;
 	}
 	constexpr const bool operator==(const Vector3& other) const noexcept {
+		return x == other.x && y == other.y && z == other.z;
+	}
+	constexpr const bool operator==(const glm::vec3& other) const noexcept {
 		return x == other.x && y == other.y && z == other.z;
 	}
 };

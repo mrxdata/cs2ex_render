@@ -2,6 +2,10 @@
 #include "vector.h"
 #include <array>
 #include "local_player.h"
+#include <glm/ext/matrix_float4x4.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/trigonometric.hpp>
 
 struct Matrix4 {
     float data[4][4] = { 0 };
@@ -49,7 +53,7 @@ struct Matrix4 {
 };
 
 namespace graphics {
-    Matrix4 createViewMatrix(const LocalPlayer& local_player);
-    Matrix4 createProjectionMatrix();
-    Vector3 world_to_screen(const Vector3& position, const Matrix4& viewMatrix, const Matrix4& projectionMatrix);
+    glm::mat4 createViewMatrix(const LocalPlayer& local_player);
+    glm::mat4 createProjectionMatrix();
+    glm::vec3 world_to_screen(const glm::vec3& position, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
 }

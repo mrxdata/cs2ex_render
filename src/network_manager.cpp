@@ -108,12 +108,17 @@ void NetworkManager::update_data(Enemies& entity_list)
 			g::local_player.position = { player->x(), player->y(), player->z() };
 			g::local_player.yaw = player->yaw();
 			g::local_player.pitch = player->pitch();
-
+			player = entity_list.mutable_entries()->erase(player);
+		} else if (player->hp() <= 0)
+		{
 			player = entity_list.mutable_entries()->erase(player);
 		}
 		else {
 			++player;
 		}
 	}
+#ifdef DEBUG
+	g::packet_counter.fetch_add(1);
+#endif
 	g::entity_list = entity_list;
 }

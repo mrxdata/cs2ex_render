@@ -9,60 +9,55 @@
 #undef max
 
 namespace graphics {
-
-    float fov_vertical = 82.0f;
-    float fov_horizontal = 101.085f;
+    float fov_horizontal = 135.f;
     float min_distance = 32.0f;
     float max_distance = 2000.0f;
 
-	float inline to_radians(float degrees) {
-		return degrees * std::numbers::pi_v<float> / 180.0f;
-	}
+    glm::mat4 createViewMatrix(const LocalPlayer& local_player) {
+        float camera_height = 0.f;
 
-    Matrix4 createViewMatrix(const LocalPlayer& local_player) {
-        Matrix4 viewMatrix;
+        glm::vec3 camera_pos(local_player.position.x, local_player.position.y + camera_height, local_player.position.z);
+        float yaw_rads = glm::radians(local_player.yaw);
 
-        float yaw_rads = to_radians(local_player.yaw);
-        float pitch_rads = to_radians(local_player.pitch);
-
-        Vector3 forward(
-            std::cos(pitch_rads) * std::cos(yaw_rads),
-            std::sin(pitch_rads),
-            std::cos(pitch_rads) * std::sin(yaw_rads)
-        );
-
-        Vector3 up(0.0f, 1.0f, 0.0f);
-        viewMatrix.setLookAt(local_player.position, local_player.position + forward, up);
-        return viewMatrix;
-    }
-
-    Matrix4 createProjectionMatrix() {
-        Matrix4 projection;
-        float tan_half_fov = std::tan(to_radians(fov_vertical * 0.5f));
-
-        projection.data[0][0] = 1.0f / (g::ASPECT_RATIO * tan_half_fov);
-        projection.data[1][1] = 1.0f / tan_half_fov;
-        projection.data[2][2] = -(max_distance + min_distance) / (max_distance - min_distance);
-        projection.data[2][3] = -(2.0f * max_distance * min_distance) / (max_distance - min_distance);
-        projection.data[3][2] = -1.0f;
-        projection.data[3][3] = 0.0f;
-
-        return projection;
-    }
-
-    Vector3 world_to_screen(const Vector3& position, const Matrix4& viewMatrix, const Matrix4& projectionMatrix) {
-        Vector4 clipSpace = projectionMatrix * viewMatrix * Vector4(position, 1.0f);
-
-        if (clipSpace.w == 0.0f) {
-            return { -1.0f, -1.0f };
+        if (yaw_rads > glm::pi<float>()) {
+            yaw_rads -= glm::two_pi<float>();
         }
 
-        float ndcX = clipSpace.x / clipSpace.w;
-        float ndcY = clipSpace.y / clipSpace.w;
+        float pitch_rads = glm::radians(local_player.pitch);
 
-        float screenX = (ndcX + 1.0f) * 0.5f * g::SCREEN_WIDTH;
-        float screenY = (1.0f - ndcY) * 0.5f * g::SCREEN_HEIGHT;
+        glm::vec3 forward(
+            std::cos(pitch_rads) * std::cos(yaw_rads),
+            -std::sin(pitch_rads),
+            std::cos(pitch_rads) * std::sin(yaw_rads) 
+        );
+
+        forward = glm::normalize(forward);
+
+        glm::vec3 target = camera_pos + forward;
+
+        glm::vec3 up(0.0f, 1.0f, 0.0f);
+
+        return glm::lookAt(camera_pos, target, up);
+    }
+
+    glm::mat4 createProjectionMatrix() {
+        float fov_vertical = glm::radians(graphics::fov_horizontal) / g::ASPECT_RATIO;
+        return glm::perspective(fov_vertical, g::ASPECT_RATIO, graphics::min_distance, graphics::max_distance);
+    }
+
+    glm::vec3 world_to_screen(const glm::vec3& position, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) {
+        glm::vec4 clipSpace = projectionMatrix * viewMatrix * glm::vec4(position, 1.0f);
+
+        if (clipSpace.w <= 0.01f) {
+            return { -1.0f, -1.0f, -1.0f };
+        }
+
+        glm::vec3 ndc = glm::vec3(clipSpace) / clipSpace.w;
+
+        float screenX = g::SCREEN_WIDTH - ((ndc.x + 1.0f) * 0.5f * g::SCREEN_WIDTH);
+        float screenY = (1.0f - ndc.y) * 0.5f * g::SCREEN_HEIGHT;
 
         return { screenX, screenY, clipSpace.w };
     }
+  
 }

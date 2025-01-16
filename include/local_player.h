@@ -18,6 +18,6 @@ struct LocalPlayer {
 	float yaw, pitch;
 	int id;
 	int team;
-	std::string name = "10k bacteria exam";
+	std::string name = "death'o'durunt";
 	ViewMatrix view_matrix;
 };

@@ -7,6 +7,7 @@
 #include <chrono>
 #include "../include/time_counter.h"
 
+
 LRESULT __stdcall WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message)
     {
@@ -99,13 +100,31 @@ int main() {
 	network_manager.send_udp_hello();  
     network_manager.receive_data_async();  
     network_manager.run_io_service();
-    
+
+#ifdef DEBUG
+    std::thread counter_thread([]() {
+        g::timer.start();
+        while (true)
+        {
+            if (g::msg_counter.load() % 100 == 0)
+            {
+                printf("MSG: %d | PACKET: %d | RENDER: %d | TIME: %s\n", g::msg_counter.load(), g::packet_counter.load(), g::render_counter.load(), g::timer.return_duration("ms"));
+            }
+        }
+        });
+    counter_thread.detach();
+#endif
     MSG msg = {};
     while (GetMessage(&msg, NULL, 0, 0)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
+#ifdef DEBUG
+        g::msg_counter.fetch_add(1);
+#endif
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
-
+#ifdef DEBUG
+    counter_thread.join();
+#endif
     return 0;
 }
