@@ -14,15 +14,6 @@ struct Vector3
 		x(x), y(y), z(z) {
 	}
 
-	constexpr Vector3 to_angle() const noexcept
-	{
-		return Vector3 {
-			std::atan2(-z, std::hypot(x, y)) * (180.0f / std::numbers::pi_v<float>),
-			std::atan2(y, x) * (180.0f / std::numbers::pi_v<float>), 
-			0.0f
-		};
-	}
-
 	float dot(const Vector3& other) const noexcept {
 		return x * other.x + y * other.y + z * other.z;
 	}
@@ -52,15 +43,6 @@ struct Vector3
 						 (y - other.y) * (y - other.y) +
 						 (z - other.z) * (z - other.z));
 	}
-
-	static Vector3 direction_vector(const float yaw_rad, const float pitch_rad) {
-		float vx = cos(yaw_rad) * cos(pitch_rad);  
-		float vy = sin(pitch_rad);                
-		float vz = -sin(yaw_rad) * cos(pitch_rad); 
-
-		return { vx, vy, vz };
-	}
-
 
 	constexpr const Vector3& operator-(const Vector3& other) const noexcept {
 		return { x - other.x, y - other.y, z - other.z };

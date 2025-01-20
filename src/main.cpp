@@ -99,7 +99,6 @@ int main() {
 	network_manager.send_udp_hello();  
     network_manager.receive_data_async();  
     network_manager.run_io_service();
-
 #ifdef DEBUG
     std::thread counter_thread([]() {
         g::timer.start();
@@ -124,7 +123,6 @@ int main() {
 #endif
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
-
 
 #ifdef DEBUG
     counter_thread.join();

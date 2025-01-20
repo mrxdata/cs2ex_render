@@ -9,7 +9,14 @@
 #undef min
 #undef max
 
+constexpr float scale_factor = 25000.f; // Empirically found
+glm::vec3 screen_pos;
+
 void Render::RenderESP() {
+
+    glm::mat4 view_matrix = graphics::createViewMatrix(g::local_player);
+    glm::mat4 projection_matrix = graphics::createProjectionMatrix();
+
     for (const auto& player : g::entity_list.entries()) {
         glm::vec3 player_pos(player.x(), player.y(), player.z());
 
@@ -17,12 +24,10 @@ void Render::RenderESP() {
             continue;
         }
 
-        glm::mat4 view_matrix = graphics::createViewMatrix(g::local_player);
-        glm::mat4 projection_matrix = graphics::createProjectionMatrix();
-
-        glm::vec3 screen_pos = graphics::world_to_screen(player_pos, view_matrix, projection_matrix);
-
-        const float scale_factor = 25000.f; // Empirically found
+        if (!graphics::world_to_screen(player_pos, view_matrix, projection_matrix, screen_pos))
+        {
+            continue;
+        }
 
         if (screen_pos.z > 0.0f) {
             float box_width = scale_factor / screen_pos.z;
@@ -42,7 +47,6 @@ void Render::RenderESP() {
     }
 }
 
-
 void Render::DrawBorderedBox(HDC hdc, int x, int y, int w, int h, COLORREF borderColor)
 {
     HBRUSH hBorderBrush = CreateSolidBrush(borderColor);
@@ -54,7 +58,6 @@ void Render::DrawBorderedBox(HDC hdc, int x, int y, int w, int h, COLORREF borde
     SelectObject(hdc, hOldBrush);
     DeleteObject(hBorderBrush);
 }
-
 
 void Render::DrawCircle(HDC hdc, int x, int y, int radius, COLORREF color)
 {

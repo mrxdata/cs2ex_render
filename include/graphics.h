@@ -55,5 +55,5 @@ struct Matrix4 {
 namespace graphics {
     glm::mat4 createViewMatrix(const LocalPlayer& local_player);
     glm::mat4 createProjectionMatrix();
-    glm::vec3 world_to_screen(const glm::vec3& position, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
+    bool world_to_screen(const glm::vec3& position, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, glm::vec3& screen);
 }

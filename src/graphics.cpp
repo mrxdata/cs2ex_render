@@ -45,19 +45,20 @@ namespace graphics {
         return glm::perspective(fov_vertical, g::ASPECT_RATIO, graphics::min_distance, graphics::max_distance);
     }
 
-    glm::vec3 world_to_screen(const glm::vec3& position, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) {
+    bool world_to_screen(const glm::vec3& position, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, glm::vec3& screen) {
         glm::vec4 clipSpace = projectionMatrix * viewMatrix * glm::vec4(position, 1.0f);
 
         if (clipSpace.w <= 0.01f) {
-            return { -1.0f, -1.0f, -1.0f };
+            return false;
         }
 
         glm::vec3 ndc = glm::vec3(clipSpace) / clipSpace.w;
 
-        float screenX = g::SCREEN_WIDTH - ((ndc.x + 1.0f) * 0.5f * g::SCREEN_WIDTH);
-        float screenY = (1.0f - ndc.y) * 0.5f * g::SCREEN_HEIGHT;
+        screen.x = g::SCREEN_WIDTH - ((ndc.x + 1.0f) * 0.5f * g::SCREEN_WIDTH);
+        screen.y = (1.0f - ndc.y) * 0.5f * g::SCREEN_HEIGHT;
+        screen.z = clipSpace.w;
 
-        return { screenX, screenY, clipSpace.w };
+        return true;
     }
   
 }
